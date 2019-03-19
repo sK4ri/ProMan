@@ -11,7 +11,8 @@ def index():
     """
     This is a one-pager which shows all the boards and cards
     """
-    return render_template('index.html')
+    boards = data_handler.get_boards()
+    return render_template('index.html', boards=boards)
 
 
 @app.route("/get-boards")
@@ -42,4 +43,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(debug=True)

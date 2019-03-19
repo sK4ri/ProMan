@@ -1,6 +1,6 @@
+import os
 import psycopg2
 import psycopg2.extras
-import os
 
 
 def get_connection_string():
@@ -43,41 +43,3 @@ def connection_handler(function):
         return ret_value
 
     return wrapper
-
-
-_cache = {}
-
-
-@connection_handler
-def get_statuses(cursor, force=False):
-    if force or 'statuses' not in _cache:
-        cursor.execute('''
-                        SELECT id, title FROM statuses;
-        ''')
-        _cache['statuses'] = cursor.fetchall()
-    return _cache['statuses']
-
-
-@connection_handler
-def get_cards(cursor, force=False):
-    if force or 'cards' not in _cache:
-        cursor.execute('''
-                        SELECT id, board_id, title, status_id, cards.order FROM cards;
-        ''')
-        _cache['boards'] = cursor.fetchall()
-    return _cache['cards']
-
-
-@connection_handler
-def get_boards(cursor, force=False):
-    if force or 'boards' not in _cache:
-        cursor.execute('''
-                        SELECT id, title FROM boards;
-        ''')
-        _cache['boards'] = cursor.fetchall()
-    return _cache['boards']
-
-
-def clear_cache():
-    for k in list(_cache.keys()):
-        _cache.pop(k)
