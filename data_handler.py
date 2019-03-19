@@ -5,37 +5,37 @@ from persistence import connection_handler
 def get_boards(cursor):
     """
     Gather all boards
-    :return: [{'title': board_title, 'columns': [{'title': column_title, 'cards': [{'title': card_title}, {'title': card_title}, ...]}, {'title': column_title, 'cards': [{},...]}, {...}]}, {...}]
+    :return: run this file to see it in the terminal
     """
     cursor.execute("""
                     SELECT * FROM boards
                     """)
-    boards = cursor.fetchall()
-    for i, board in enumerate(boards):
-        cards = get_cards_by_board_id(board['id'])
-        column_ids = list(set([card['status_id'] for card in cards]))
-        boards[i]['columns'] = [{'id': column_id, 'title': get_status_title_by_id(column_id)} for column_id in column_ids]
-        for j, column in enumerate(boards[i]['columns']):
-            boards[i]['columns'][j]['cards'] = [card for card in cards if card['status_id'] == column['id']]
-    return boards
-
-
-@connection_handler
-def get_cards_for_board(cursor, board_id):
-    cursor.execute("""
-                    SELECT * FROM cards
-                    WHERE board_id = %(id)s
-                    """, {'id': board_id})
     return cursor.fetchall()
 
 
 @connection_handler
-def get_cards_by_board_id(cursor, board_id):
+def get_columns_by_board_id(cursor, board_id):
     cursor.execute("""
                     SELECT * FROM cards
                     WHERE board_id = %(id)s
                     """, {'id': board_id})
-    return cursor.fetchall()
+    cards = cursor.fetchall()
+    column_ids = list(set([card['status_id'] for card in cards]))
+    columns = [{'id': column_id, 'title': get_status_title_by_id(column_id)} for column_id in column_ids]
+    for i, column in enumerate(columns):
+        columns[i]['cards'] = [card for card in cards if card['status_id'] == column['id']]
+    return columns
+
+
+@connection_handler
+def get_board_by_id(cursor, board_id):
+    cursor.execute("""
+                    SELECT * FROM boards
+                    WHERE id = %(id)s
+                    """, {'id': board_id})
+    board = cursor.fetchall()[0]
+    board['columns'] = get_columns_by_board_id(board['id'])
+    return board
 
 
 @connection_handler
