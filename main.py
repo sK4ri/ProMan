@@ -1,7 +1,8 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, session, redirect, flash
 from util import json_response
-
+from util import hash_password, verify_password
 import data_handler
+
 
 app = Flask(__name__)
 
@@ -19,6 +20,40 @@ def index():
 @json_response
 def create_board():
     return data_handler.create_board()
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register_user():
+    if request.method == 'POST' and 'username' not in session:
+        session['username'] = request.form['register_name']
+        plain_password = request.form['registerPassword']
+        hashed_pw = hash_password(plain_password)
+        data_handler.add_user_to_users_table(session['username'], hashed_pw)
+        return redirect(url_for('display_table_data'))
+    elif 'username' in session:
+        flash('Active Login, Logout, then try again.')
+        return redirect(url_for('display_table_data'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login_user():
+    if request.method == 'POST' and 'username' not in session:
+        session['username'] = request.form['login_name']
+        plain_password = request.form['loginPassword']
+        hashed_pw = data_handler.get_user_data(session['username'])
+        match = verify_password(plain_password, hashed_pw['password'])
+        if match:
+            return redirect(url_for('display_table_data'))
+    else:
+        flash('Active login, logout then try again.')
+        return redirect(url_for('display_table_data'))
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout_user():
+    session.pop('username', None)
+    session.pop('id', None)
+    return redirect(url_for('display_table_data'))
 
 
 @app.route("/get-boards")
