@@ -35,10 +35,9 @@ export let dom = {
 		for(let board of boards){
 			boardList += `
 							<section class="board" id="board${board.id}">
-							<div class="board-header"><span class="board-title">${board.title}</span>
+							<div class="board-header"><span class="board-title"><input class="board-rename" data-board-id="${board.id}" value="${board.title}"></span>
 								<button id="add-card-button" class="board-add" data-board-id="board.id">Add Card</button>
 								<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
-								<button type="button" class="board-rename" data-board-id="${board.id}">edit title</button>
 							</div>
 							</section>
             `;
