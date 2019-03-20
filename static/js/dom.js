@@ -1,6 +1,7 @@
 // It uses data_handler.js to visualize elements
 import { dataHandler } from "./data_handler.js";
 
+
 export let dom = {
     _appendToElement: function (elementToExtend, textToAppend, prepend = false) {
         // function to append new DOM elements (represented by a string) to an existing DOM element
@@ -19,6 +20,7 @@ export let dom = {
     },
     init: function () {
         // This function should run once, when the page is loaded.
+
     },
     loadBoards: function () {
         // retrieves boards and makes showBoards called
@@ -54,4 +56,6 @@ export let dom = {
         // it adds necessary event listeners also
     },
     // here comes more features
+
+
 };
