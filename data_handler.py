@@ -104,6 +104,16 @@ def get_status_title_by_id(cursor, status_id):
     return fetch[0]['title'] if fetch else False
 
 
+@connection_handler
+def edit_board_title(cursor, board_id, title):
+    cursor.execute('''
+                    UPDATE cards
+                    SET title= %s 
+                    WHERE id= %s
+                    ''', (title, board_id)
+                   )
+
+
 if __name__ == '__main__':
     print(get_board_by_id(1))
     add_column_to_board(1, 'nemtom')

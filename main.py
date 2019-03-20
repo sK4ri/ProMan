@@ -1,5 +1,6 @@
-from flask import Flask, render_template, url_for
-from util import json_response
+from flask import Flask, render_template, url_for, jsonify
+from util import json_response, extract_form
+
 
 import data_handler
 
@@ -34,8 +35,17 @@ def get_cards_for_board(board_id: int):
     return data_handler.get_board_by_id(board_id)
 
 
+@app.route('/edit-board-title', methods=['POST'])
+@json_response
+def edit_board_title():
+    edit_board_title_dict = extract_form()
+    data_handler.edit_board_title(edit_board_title_dict['id'], edit_board_title_dict['title'])
+    return "success"
+
+
 def main():
-    app.run(debug=True)
+    app.run(debug=True,
+            port=5000)
 
     # Serving the favicon
     with app.app_context():
