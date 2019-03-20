@@ -107,7 +107,7 @@ def get_status_title_by_id(cursor, status_id):
 @connection_handler
 def edit_board_title(cursor, board_id, title):
     cursor.execute('''
-                    UPDATE cards
+                    UPDATE boards
                     SET title= %s 
                     WHERE id= %s
                     ''', (title, board_id)

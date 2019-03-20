@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, jsonify
+from flask import Flask, render_template, url_for, request, Response
 from util import json_response, extract_form
 
 
@@ -35,12 +35,10 @@ def get_cards_for_board(board_id: int):
     return data_handler.get_board_by_id(board_id)
 
 
-@app.route('/edit-board-title', methods=['POST'])
-@json_response
-def edit_board_title():
-    edit_board_title_dict = extract_form()
-    data_handler.edit_board_title(edit_board_title_dict['id'], edit_board_title_dict['title'])
-    return "success"
+@app.route('/edit-board-title/<board_id>', methods=['POST'])
+def edit_board_title(board_id):
+    new_title = request.get_json()['title']
+    return data_handler.edit_board_title(board_id, new_title)
 
 
 def main():
