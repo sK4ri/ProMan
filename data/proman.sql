@@ -68,4 +68,32 @@ create table boards_statuses
 				on delete cascade
 );
 
+INSERT INTO statuses VALUES (1,'new');
+INSERT INTO statuses VALUES (2,'in progress');
+INSERT INTO statuses VALUES (3,'testing');
+INSERT INTO statuses VALUES (4,'done');
 
+INSERT INTO boards VALUES (1,'Board 1');
+INSERT INTO boards VALUES (2,'Board 2');
+
+INSERT INTO cards VALUES (1,1,'new card 1',1,0);
+INSERT INTO cards VALUES (2,1,'new card 2',1,1);
+INSERT INTO cards VALUES (3,1,'in progress card',2,0);
+INSERT INTO cards VALUES (4,1,'planning',3,0);
+INSERT INTO cards VALUES (5,1,'done card 1',4,0);
+INSERT INTO cards VALUES (6,1,'done card 1',4,1);
+INSERT INTO cards VALUES (7,2,'new card 1',1,0);
+INSERT INTO cards VALUES (8,2,'new card 2',1,1);
+INSERT INTO cards VALUES (9,2,'in progress card',2,0);
+INSERT INTO cards VALUES (10,2,'planning',3,0);
+INSERT INTO cards VALUES (11,2,'done card 1',4,0);
+INSERT INTO cards VALUES (12,2,'done card 1',4,1);
+
+INSERT INTO boards_statuses VALUES (1,1);
+INSERT INTO boards_statuses VALUES (1,2);
+INSERT INTO boards_statuses VALUES (1,3);
+INSERT INTO boards_statuses VALUES (1,4);
+INSERT INTO boards_statuses VALUES (2,1);
+INSERT INTO boards_statuses VALUES (2,2);
+INSERT INTO boards_statuses VALUES (2,3);
+INSERT INTO boards_statuses VALUES (2,4);

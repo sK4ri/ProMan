@@ -14,6 +14,34 @@ def get_boards(cursor):
 
 
 @connection_handler
+def create_board(cursor):
+    cursor.execute("""
+                    INSERT INTO boards(title)
+                    VALUES (%(title)s) 
+                    """, {'title': 'New Board'})
+    created_board = get_last_created_board()
+    set_default_columns(created_board['id'])
+    return get_last_created_board()
+
+
+@connection_handler
+def get_last_created_board(cursor):
+    cursor.execute("""
+                    SELECT * FROM boards ORDER BY id DESC LIMIT 1;
+                    """)
+    return cursor.fetchall()[0]
+
+
+@connection_handler
+def set_default_columns(cursor, board_id):
+    for i in range(1, 5):
+        cursor.execute("""
+                        INSERT INTO boards_statuses(board_id, status_id) 
+                        VALUES (%(board_id)s, %(status_id)s)
+                        """, {'board_id': board_id, 'status_id': i})
+
+
+@connection_handler
 def get_columns_by_board_id(cursor, board_id):
     cursor.execute("""
                     SELECT * FROM boards_statuses
@@ -105,5 +133,4 @@ def get_status_title_by_id(cursor, status_id):
 
 
 if __name__ == '__main__':
-    print(get_board_by_id(1))
-    add_column_to_board(1, 'nemtom')
+    print(create_board())

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from util import json_response
 
 import data_handler
@@ -13,6 +13,12 @@ def index():
     """
     boards = data_handler.get_boards()
     return render_template('index.html', boards=boards)
+
+
+@app.route('/create-board')
+@json_response
+def create_board():
+    return data_handler.create_board()
 
 
 @app.route("/get-boards")

@@ -30,6 +30,9 @@ export let dom = {
 		// shows boards appending them to #boards div
 		// it adds necessary event listeners also
 
+		let boardsElement = document.querySelector('#boards');
+		boardsElement.innerHTML = '';
+
 		let boardList = '';
 
 		for(let board of boards){
@@ -48,8 +51,9 @@ export let dom = {
 							${boardList}
         `;
 
-		this._appendToElement(document.querySelector('#boards'), outerHtml);
+		this._appendToElement(boardsElement, outerHtml);
 
+		document.querySelector('#add-board-button').addEventListener('click', dom.createBoard);
 		dom.setBoardToggleButtons()
 	},
 	loadBoard: function (boardId) {
@@ -119,4 +123,9 @@ export let dom = {
 			symbol.className = symbol.className.replace('up', 'down');
 		}
 	},
+	createBoard: function(title='New Board') {
+		dataHandler.createNewBoard(title, function() {
+			dom.loadBoards();
+		})
+	}
 };
