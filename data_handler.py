@@ -10,7 +10,10 @@ def get_boards(cursor):
     cursor.execute("""
                     SELECT * FROM boards
                     """)
-    return cursor.fetchall()
+    boards = cursor.fetchall()
+    for i, board in enumerate(boards):
+        boards[i]['columns'] = get_columns_by_board_id(board['id'])
+    return boards
 
 
 @connection_handler
@@ -42,7 +45,7 @@ def set_default_columns(cursor, board_id):
 
 
 @connection_handler
-def get_columns_by_board_id(cursor, board_id):
+def get_columns_by_board_id(cursor, board_id, cards=False):
     cursor.execute("""
                     SELECT * FROM boards_statuses
                     WHERE board_id = %(id)s
@@ -50,9 +53,10 @@ def get_columns_by_board_id(cursor, board_id):
     boards_statuses = cursor.fetchall()
     columns = [{'id': status['status_id'], 'title': get_status_title_by_id(status['status_id'])} for status in boards_statuses]
 
-    cards = get_cards_by_board_id(board_id)
-    for i, column in enumerate(columns):
-        columns[i]['cards'] = [card for card in cards if card['status_id'] == column['id']]
+    if cards:
+        cards = get_cards_by_board_id(board_id)
+        for i, column in enumerate(columns):
+            columns[i]['cards'] = [card for card in cards if card['status_id'] == column['id']]
     return columns
 
 
@@ -66,13 +70,42 @@ def get_cards_by_board_id(cursor, board_id):
 
 
 @connection_handler
+def create_card(cursor, board_id, status_id):
+    order = get_last_card_order(board_id, status_id) + 1
+    cursor.execute("""
+                    INSERT INTO cards(board_id, title, status_id, "order")
+                    VALUES (%(board_id)s, %(title)s, %(status_id)s, %(order)s)
+                    """, {'board_id': board_id, 'title': 'New Card', 'status_id': status_id, 'order': order})
+    return get_last_created_card()
+
+
+@connection_handler
+def get_last_created_card(cursor):
+    cursor.execute("""
+                    SELECT * FROM cards ORDER BY id DESC LIMIT 1;
+                    """)
+    return cursor.fetchall()[0]
+
+
+@connection_handler
+def get_last_card_order(cursor, board_id, status_id):
+    cursor.execute("""
+                    SELECT "order" FROM cards
+                    WHERE board_id = %(board_id)s AND status_id = %(status_id)s
+                    """, {'board_id': board_id, 'status_id': status_id})
+    cards = cursor.fetchall()
+    return max([card['order'] for card in cards]) if cards else -1
+
+
+
+@connection_handler
 def get_board_by_id(cursor, board_id):
     cursor.execute("""
                     SELECT * FROM boards
                     WHERE id = %(id)s
                     """, {'id': board_id})
     board = cursor.fetchall()[0]
-    board['columns'] = get_columns_by_board_id(board['id'])
+    board['columns'] = get_columns_by_board_id(board['id'], True)
     return board
 
 
@@ -133,4 +166,4 @@ def get_status_title_by_id(cursor, status_id):
 
 
 if __name__ == '__main__':
-    print(create_board())
+    print(create_card(1, 1))

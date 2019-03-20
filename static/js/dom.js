@@ -39,7 +39,7 @@ export let dom = {
 			boardList += `
 							<section class="board" id="board${board.id}">
 							<div class="board-header"><span class="board-title">${board.title}</span>
-								<button id="add-card-button" class="board-add" data-board-id="board.id">Add Card</button>
+								<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
 								<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
 							</div>
 							</section>
@@ -54,6 +54,9 @@ export let dom = {
 		this._appendToElement(boardsElement, outerHtml);
 
 		document.querySelector('#add-board-button').addEventListener('click', dom.createBoard);
+		document.querySelectorAll('.board-add').forEach(button => button.addEventListener('click', function() {
+			dom.createCard(parseInt(this.dataset.boardId), parseInt(this.dataset.statusId))
+		}));
 		dom.setBoardToggleButtons()
 	},
 	loadBoard: function (boardId) {
@@ -67,6 +70,11 @@ export let dom = {
 		// it adds necessary event listeners also
 		//TODO dragula event listeners
 
+		let boardColumns = Array.from(document.querySelectorAll('.board-columns')).find(column => parseInt(column.dataset.boardId) === board.id);
+		if (boardColumns) {
+			boardColumns.remove();
+		}
+		console.log(boardColumns);
 
 		let columnList = '';
 		for (let column of board.columns) {
@@ -100,8 +108,9 @@ export let dom = {
 	// here comes more features
 
 	hideBoard: function(boardId) {
+		console.log('hideBoard');
 		let boards = Array.from(document.querySelectorAll('.board-columns'));
-		let boardToHide = boards.find(board => board.dataset.boardId === boardId);
+		let boardToHide = boards.find(board => parseInt(board.dataset.boardId) === boardId);
 		boardToHide.remove();
 	},
 	setBoardToggleButtons: function() {
@@ -113,9 +122,11 @@ export let dom = {
 		}
 	},
 	toggleBoard: function(button) {
-		let boardId = button.dataset.boardId;
-		let symbol = button.childNodes[0];
-		if (symbol.classList.contains('fa-chevron-down')) {
+		let boardId = parseInt(button.dataset.boardId);
+		let board = document.querySelector(`#board${boardId}`);
+		let opened = board.children.length > 1;
+		let symbol = button.children[0];
+		if (!opened) {
 			dom.loadBoard(boardId);
 			symbol.className = symbol.className.replace('down', 'up');
 		} else {
@@ -123,9 +134,16 @@ export let dom = {
 			symbol.className = symbol.className.replace('up', 'down');
 		}
 	},
-	createBoard: function(title='New Board') {
-		dataHandler.createNewBoard(title, function() {
+	createBoard: function() {
+		dataHandler.createNewBoard(function() {
 			dom.loadBoards();
 		})
+	},
+	createCard: function(boardId, statusId) {
+		dataHandler.createNewCard(boardId, statusId, function () {
+			dom.loadBoard(boardId);
+			let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === boardId);
+			button.children[0].className = button.children[0].className.replace('down', 'up');
+		});
 	}
 };

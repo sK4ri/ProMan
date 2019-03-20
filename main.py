@@ -3,7 +3,6 @@ from util import json_response
 from util import hash_password, verify_password
 import data_handler
 
-
 app = Flask(__name__)
 
 
@@ -54,6 +53,12 @@ def logout_user():
     session.pop('username', None)
     session.pop('id', None)
     return redirect(url_for('display_table_data'))
+
+
+@app.route('/create-card')
+@json_response
+def create_card():
+    return data_handler.create_card(request.args.get('board_id'), request.args.get('status_id'))
 
 
 @app.route("/get-boards")
