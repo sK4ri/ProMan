@@ -1,5 +1,5 @@
 from persistence import connection_handler
-
+from psycopg2 import sql
 
 @connection_handler
 def get_boards(cursor):
@@ -130,6 +130,28 @@ def get_status_title_by_id(cursor, status_id):
                     """, {'id': status_id})
     fetch = cursor.fetchall()
     return fetch[0]['title'] if fetch else False
+
+
+@connection_handler
+def get_user_data(cursor, username):
+    cursor.execute(
+        sql.SQL("""
+                SELECT * FROM users
+                WHERE username = %(username)s;
+        """), {'username': username})
+
+    single_user_password = cursor.fetchone()
+    return single_user_password
+
+
+@connection_handler
+def add_user_to_users_table(cursor, username, password):
+    cursor.execute(
+        sql.SQL("""
+                INSERT INTO users (username, password)
+                VALUES (%(username)s, %(password)s)
+        """), {'username': username, 'password': password}
+    )
 
 
 if __name__ == '__main__':

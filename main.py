@@ -7,13 +7,17 @@ import data_handler
 app = Flask(__name__)
 
 
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+
 @app.route("/")
-def index():
+@app.route('/<user>')
+def index(user=''):
     """
     This is a one-pager which shows all the boards and cards
     """
     boards = data_handler.get_boards()
-    return render_template('index.html', boards=boards)
+    return render_template('index.html', boards=boards, user=user)
 
 
 @app.route('/create-board')
@@ -26,13 +30,13 @@ def create_board():
 def register_user():
     if request.method == 'POST' and 'username' not in session:
         session['username'] = request.form['register_name']
-        plain_password = request.form['registerPassword']
+        plain_password = request.form['regPassword']
         hashed_pw = hash_password(plain_password)
         data_handler.add_user_to_users_table(session['username'], hashed_pw)
-        return redirect(url_for('display_table_data'))
+        return redirect(url_for('index', user=session['username']))
     elif 'username' in session:
         flash('Active Login, Logout, then try again.')
-        return redirect(url_for('display_table_data'))
+        return redirect(url_for('index'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -43,17 +47,17 @@ def login_user():
         hashed_pw = data_handler.get_user_data(session['username'])
         match = verify_password(plain_password, hashed_pw['password'])
         if match:
-            return redirect(url_for('display_table_data'))
+            return redirect(url_for('index', user=session['username']))
     else:
         flash('Active login, logout then try again.')
-        return redirect(url_for('display_table_data'))
+        return redirect(url_for('index'))
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout_user():
     session.pop('username', None)
     session.pop('id', None)
-    return redirect(url_for('display_table_data'))
+    return redirect(url_for('index'))
 
 
 @app.route("/get-boards")
