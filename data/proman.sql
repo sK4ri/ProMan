@@ -8,6 +8,7 @@ ALTER TABLE IF EXISTS ONLY public.boards_statuses DROP CONSTRAINT IF EXISTS fk_s
 
 
 drop table if exists boards;
+drop sequence if exists public.boards_id_seq;
 create table boards
 (
 	id serial not null
@@ -20,6 +21,7 @@ create unique index boards_id_uindex
 	on boards (id);
 
 drop table if exists statuses;
+drop sequence if exists public.statuses_id_seq;
 create table statuses
 (
 	id serial not null
@@ -29,6 +31,7 @@ create table statuses
 );
 
 drop table if exists cards;
+drop sequence if exists public.cards_id_seq;
 create table cards
 (
 	id serial not null
@@ -73,8 +76,13 @@ INSERT INTO statuses VALUES (2,'in progress');
 INSERT INTO statuses VALUES (3,'testing');
 INSERT INTO statuses VALUES (4,'done');
 
+SELECT pg_catalog.setval('statuses_id_seq', 4, true);
+
+
 INSERT INTO boards VALUES (1,'Board 1');
 INSERT INTO boards VALUES (2,'Board 2');
+
+SELECT pg_catalog.setval('boards_id_seq', 2, true);
 
 INSERT INTO cards VALUES (1,1,'new card 1',1,0);
 INSERT INTO cards VALUES (2,1,'new card 2',1,1);
@@ -88,6 +96,8 @@ INSERT INTO cards VALUES (9,2,'in progress card',2,0);
 INSERT INTO cards VALUES (10,2,'planning',3,0);
 INSERT INTO cards VALUES (11,2,'done card 1',4,0);
 INSERT INTO cards VALUES (12,2,'done card 1',4,1);
+
+SELECT pg_catalog.setval('cards_id_seq', 12, true);
 
 INSERT INTO boards_statuses VALUES (1,1);
 INSERT INTO boards_statuses VALUES (1,2);

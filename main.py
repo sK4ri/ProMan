@@ -21,6 +21,12 @@ def create_board():
     return data_handler.create_board()
 
 
+@app.route('/create-card')
+@json_response
+def create_card():
+    return data_handler.create_card(request.args.get('board_id'), request.args.get('status_id'))
+
+
 @app.route("/get-boards")
 @json_response
 def get_boards():
