@@ -78,7 +78,7 @@ drop sequence if exists public.users_id_seq;
 create table users
 (
 	id serial not null,
-	user_name varchar(20),
+	username varchar(20),
 	password varchar(100)
 );
 
