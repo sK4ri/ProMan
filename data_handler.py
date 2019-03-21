@@ -220,6 +220,28 @@ def get_status_title_by_id(cursor, status_id):
 
 
 @connection_handler
+def get_user_data(cursor, username):
+    cursor.execute(
+        """
+                SELECT * FROM users
+                WHERE username = %(username)s;
+        """, {'username': username})
+
+    single_user_password = cursor.fetchone()
+    return single_user_password
+
+
+@connection_handler
+def add_user_to_users_table(cursor, username, password):
+    cursor.execute(
+        """
+                INSERT INTO users (username, password)
+                VALUES (%(username)s, %(password)s)
+        """, {'username': username, 'password': password}
+    )
+
+
+@connection_handler
 def edit_board_title(cursor, board_id, title):
     cursor.execute('''
                     UPDATE boards
@@ -229,5 +251,31 @@ def edit_board_title(cursor, board_id, title):
                    )
 
 
+@connection_handler
+def get_board_statuses(cursor, board_id):
+    cursor.execute('''
+                    SELECT status_id FROM boards_statuses WHERE board_id = %s;
+                    ''', (board_id,)
+                   )
+    return cursor.fetchall()
+
+
+@connection_handler
+def delete_all_cards_on_board(cursor, board_id):
+    cursor.execute('DELETE FROM cards WHERE board_id = %s;', (board_id,))
+
+
+@connection_handler
+def delete_all_statuses_for_board(cursor, board_id):
+    cursor.execute('DELETE FROM boards_statuses WHERE board_id = %s;', (board_id,))
+
+
+@connection_handler
+def delete_board(cursor, board_id):
+    delete_all_cards_on_board(board_id)
+    delete_all_statuses_for_board(board_id)
+    cursor.execute('DELETE FROM boards WHERE id = %s;', (board_id,))
+
+
 if __name__ == '__main__':
-    print(rename_card(1, 'anyaduristenit'))
+    print(create_card(1, 2))

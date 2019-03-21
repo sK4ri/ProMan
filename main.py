@@ -3,16 +3,22 @@ from util import json_response
 from util import hash_password, verify_password
 import data_handler
 
+
 app = Flask(__name__)
 
 
-# HTML requests
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+
 @app.route("/")
+@app.route('/')
 def index():
     """
     This is a one-pager which shows all the boards and cards
     """
     boards = data_handler.get_boards()
+    if 'username' in session:
+        return render_template('index.html', boards=boards, user=session['username'])
     return render_template('index.html', boards=boards)
 
 
@@ -20,13 +26,14 @@ def index():
 def register_user():
     if request.method == 'POST' and 'username' not in session:
         session['username'] = request.form['register_name']
-        plain_password = request.form['registerPassword']
+        plain_password = request.form['regPassword']
         hashed_pw = hash_password(plain_password)
         data_handler.add_user_to_users_table(session['username'], hashed_pw)
-        return redirect(url_for('display_table_data'))
+        boards = data_handler.get_boards()
+        return render_template('index.html', boards=boards, user=session['username'])
     elif 'username' in session:
         flash('Active Login, Logout, then try again.')
-        return redirect(url_for('display_table_data'))
+        return redirect(url_for('index'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -37,17 +44,18 @@ def login_user():
         hashed_pw = data_handler.get_user_data(session['username'])
         match = verify_password(plain_password, hashed_pw['password'])
         if match:
-            return redirect(url_for('display_table_data'))
+            boards = data_handler.get_boards()
+            return render_template('index.html', boards=boards, user=session['username'])
     else:
         flash('Active login, logout then try again.')
-        return redirect(url_for('display_table_data'))
+        return redirect(url_for('index'))
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout_user():
     session.pop('username', None)
     session.pop('id', None)
-    return redirect(url_for('display_table_data'))
+    return redirect(url_for('index'))
 
 
 # API requests
@@ -107,6 +115,11 @@ def rename_card():
 def edit_board_title(board_id):
     new_title = request.get_json()['title']
     return data_handler.edit_board_title(board_id, new_title)
+
+
+@app.route('/delete-board/<board_id>', methods=['delete'])
+def delete_board(board_id):
+    return data_handler.delete_board(board_id)
 
 
 def main():
