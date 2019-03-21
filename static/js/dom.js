@@ -154,8 +154,6 @@ export let dom = {
 				let boardId = this.getAttribute('data-title-id');
 				let newTitle = this.value;
 				dataHandler.editBoardTitle(boardId, newTitle, function () {});
-				            this.style.backgroundColor = "red";
-
 			})
 		})
 	}
