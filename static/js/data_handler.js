@@ -44,9 +44,6 @@ export let dataHandler = {
 			callback(response);
 		});
 	},
-	getBoard: function (boardId, callback) {
-		// the board is retrieved and then the callback function is called with the board
-	},
 	getStatuses: function (callback) {
 		// the statuses are retrieved and then the callback function is called with the statuses
 	},
@@ -101,7 +98,9 @@ export let dataHandler = {
 		})
 	},
 	deleteBoard: function (boardId, callback) {
-		this._api_get('/delete-board/' + boardId, callback)
+		this._api_get('/delete-board/' + boardId, (response) => {
+			callback(response)
+		});
 	},
 	// here comes more features
 };

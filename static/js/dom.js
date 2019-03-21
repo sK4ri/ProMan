@@ -107,7 +107,7 @@ export let dom = {
 		}
 
 		let addColumnButton = `
-			<div style="text-align: right;width: 20px" class="board-column">
+			<div style="text-align: right;width: auto; padding: 5px 15px 15px 5px">
 				<button class="board-column-add" data-board-id="${board.id}">+</button>
 			</div>
 		`;
@@ -170,6 +170,7 @@ export let dom = {
 				<section class="board" id="board${board.id}">
 					<div class="board-header"><div class="board-title" data-board-id="${board.id}"><span>${board.title}</span></div>
 						<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
+						<button class="board-delete" data-board-id="${board.id}"><i class="fas fa-trash-alt"></i></button>
 						<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
 					</div>
 				</section>
@@ -188,6 +189,11 @@ export let dom = {
 			titleDiv.children[0].addEventListener('click', function () {
 				dom.renameBoard(titleDiv);
 			});
+
+			Array.from(document.querySelectorAll('.board-delete')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function () {
+				dom.deleteBoard(this.dataset.boardId);
+			});
+
 		});
 	},
 	createCard: function (boardId, statusId) {
@@ -256,18 +262,20 @@ export let dom = {
 		});
 	},
 	addBoardDeleteFunction: function () {
-		let boardTitles = document.querySelectorAll('.board-delete');
-		boardTitles.forEach(function (board) {
-			board.addEventListener('click', function () {
+		let boardDeleteButtons = document.querySelectorAll('.board-delete');
+		boardDeleteButtons.forEach(function (button) {
+			button.addEventListener('click', function () {
 				let boardId = this.dataset.boardId;
-				dataHandler.deleteBoard(boardId, function () {
-					dom.loadBoards();
-				})
+				dom.deleteBoard(boardId)
 			})
 		})
-
 	},
-    DragandDrop: function (board_id) {
+	deleteBoard: function (boardId) {
+		dataHandler.deleteBoard(boardId, function () {
+			document.querySelector(`#board${boardId}`).remove();
+		})
+	},
+	DragandDrop: function (board_id) {
 		let cols = document.querySelectorAll(`${board_id} .board-column-content`);
 		let container = [];
 

@@ -117,7 +117,8 @@ def edit_board_title(board_id):
     return data_handler.edit_board_title(board_id, new_title)
 
 
-@app.route('/delete-board/<board_id>', methods=['delete'])
+@app.route('/delete-board/<board_id>')
+@json_response
 def delete_board(board_id):
     return data_handler.delete_board(board_id)
 
