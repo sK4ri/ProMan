@@ -318,5 +318,16 @@ def card_change_order(cursor, card_id, order, new_status_id):
                         """, (i+1, card_id))
 
 
+@connection_handler
+def column_change_order(cursor, board_id, order):
+    print(board_id, order)
+    for i, column_id in enumerate(order):
+        cursor.execute("""
+                        UPDATE boards_statuses
+                        SET "order" = %s
+                        WHERE board_id = %s and status_id = %s
+                        """, (i+1, board_id, column_id))
+
+
 if __name__ == '__main__':
     print(create_card(1, 2))

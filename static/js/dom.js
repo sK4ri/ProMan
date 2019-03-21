@@ -146,11 +146,18 @@ export let dom = {
 		});
 
 		// Dragula
-		dom.DragandDrop(`#board${board.id}`).on('drop', function(card, targetColumn, sourceColumn, sibling) {
+		dom.cardDragAndDrop(`#board${board.id}`).on('drop', function(card, targetColumn) {
 			let cardId = card.dataset.cardId;
 			let order = Array.from(targetColumn.children).map(card => card.dataset.cardId);
 			let newStatus = targetColumn.parentNode.dataset.columnId;
-			dataHandler.changeOrder(cardId, order, newStatus, function() {dom.loadBoard(board.id)});
+			dataHandler.changeCardOrder(cardId, order, newStatus, function() {});
+		});
+
+		dom.columnDragAndDrop(board.id).on('drop', function (column, targetDiv) {
+			let order = Array.from(targetDiv.children).map(column => column.dataset.columnId);
+			dataHandler.changeColumnOrder(board.id, order, function() {
+
+			});
 		});
 	},
 	// here comes more features
@@ -293,7 +300,7 @@ export let dom = {
 			dom.loadBoard(card.dataset.boardId)
 		});
 	},
-	DragandDrop: function (board_id) {
+	cardDragAndDrop: function (board_id) {
 		let cols = document.querySelectorAll(`${board_id} .board-column-content`);
 		let container = [];
 
@@ -302,5 +309,12 @@ export let dom = {
 
 		}
 		return dragula(container);
+	},
+	columnDragAndDrop: function (boardId) {
+		return dragula(Array.from(document.querySelectorAll('.board-columns')).filter(column => parseInt(column.dataset.boardId) === boardId), {
+			moves: function (el, container, handle) {
+				return handle.classList.contains('board-column-title');
+			}
+		});
 	}
 };

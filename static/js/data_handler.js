@@ -107,9 +107,14 @@ export let dataHandler = {
 			callback(response)
 		});
 	},
-	changeOrder: function (cardId, order, newStatus, callback) {
+	changeCardOrder: function (cardId, order, newStatus, callback) {
 		this._api_post('/card/change-order', {card_id: cardId, order: order, new_status: newStatus}, (response) => {
 			callback(response)
 		})
+	},
+	changeColumnOrder: function (boardId, order, callback) {
+		this._api_post('/column/change-order', {board_id: boardId, order: order}, (response) => {
+			callback(response)
+		});
 	}
 };
