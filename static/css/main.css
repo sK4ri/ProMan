@@ -90,6 +90,10 @@ section.board{
     text-align: center;
 }
 
+.board-column-add{
+    text-align: right;
+}
+
 .card{
     position: relative;
     background: #222;

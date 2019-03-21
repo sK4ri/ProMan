@@ -6,6 +6,7 @@ import data_handler
 app = Flask(__name__)
 
 
+# HTML requests
 @app.route("/")
 def index():
     """
@@ -13,12 +14,6 @@ def index():
     """
     boards = data_handler.get_boards()
     return render_template('index.html', boards=boards)
-
-
-@app.route('/create-board')
-@json_response
-def create_board():
-    return data_handler.create_board()
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -55,6 +50,13 @@ def logout_user():
     return redirect(url_for('display_table_data'))
 
 
+# API requests
+@app.route('/create-board')
+@json_response
+def create_board():
+    return data_handler.create_board()
+
+
 @app.route('/create-card')
 @json_response
 def create_card():
@@ -78,6 +80,19 @@ def get_cards_for_board(board_id: int):
     :param board_id: id of the parent board
     """
     return data_handler.get_board_by_id(board_id)
+
+
+@app.route('/create-column/<int:board_id>')
+@json_response
+def create_column(board_id):
+    return data_handler.create_column(board_id, request.args.get('title'))
+
+
+@app.route('/rename-column', methods=['POST'])
+@json_response
+def rename_column():
+    data = request.get_json()
+    return data_handler.rename_column(data['board_id'], data['column_id'], data['title'])
 
 
 def main():

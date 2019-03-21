@@ -23,6 +23,10 @@ export let dataHandler = {
 		fetch(url, {
 			method: 'POST',
 			credentials: 'same-origin',
+			headers: {
+				"Content-Type": "application/json",
+				// "Content-Type": "application/x-www-form-urlencoded",
+			},
 			body: JSON.stringify(data)
 		})
 			.then(response => response.json())  // parse the response as JSON
@@ -72,6 +76,18 @@ export let dataHandler = {
 			this._data = response;
 			callback(response);
 		})
-	}
+	},
+	createNewColumn: function (boardId, title, callback) {
+		this._api_get(`/create-column/${boardId}?title=${title}`, (response) => {
+			this._data = response;
+			callback(response);
+		});
+	},
 	// here comes more features
+	renameColumn: function (columnId, boardId, title, callback) {
+		this._api_post(`/rename-column`, {column_id: columnId, board_id: boardId, title: title}, (response) => {
+			this._data = response;
+			callback(response);
+		});
+	}
 };

@@ -35,7 +35,7 @@ export let dom = {
 
 		let boardList = '';
 
-		for(let board of boards){
+		for (let board of boards){
 			boardList += `
 							<section class="board" id="board${board.id}">
 							<div class="board-header"><span class="board-title">${board.title}</span>
@@ -74,7 +74,6 @@ export let dom = {
 		if (boardColumns) {
 			boardColumns.remove();
 		}
-		console.log(boardColumns);
 
 		let columnList = '';
 		for (let column of board.columns) {
@@ -89,7 +88,7 @@ export let dom = {
 			}
 			columnList += `
 				<div class="board-column" data-column-id="${column.id}">
-					<div class="board-column-title">${column.title}</div>
+					<div class="board-column-title" data-column-id="${column.id}" data-board-id="${board.id}"><span>${column.title}</span></div>
 					<div class="board-column-content">
 						${cardList}
 					</div>
@@ -97,53 +96,105 @@ export let dom = {
 			`
 		}
 
+		let addColumnButton = `
+			<div style="text-align: right;width: 20px" class="board-column">
+				<button class="board-column-add" data-board-id="${board.id}">+</button>
+			</div>
+		`;
+
 		const outerHtml = `
 			<div class="board-columns" data-board-id="${board.id}">
 				${columnList}
+				${addColumnButton}
 			</div>
 		`;
 
 		this._appendToElement(document.querySelector(`#board${board.id}`), outerHtml);
+
+		// Add columns button
+		Array.from(document.querySelectorAll('.board-column-add')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function() {
+			dom.createColumn(board.id)
+		});
+
+		// Rename columns
+		document.querySelectorAll('.board-column-title').forEach(title => title.firstChild.addEventListener('click', function () {
+			dom.renameColumn(title);
+		}));
+
+		// Toggle button
+		let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id);
+		button.children[0].className = button.children[0].className.replace('down', 'up');
+
 	},
 	// here comes more features
 
-	hideBoard: function(boardId) {
-		console.log('hideBoard');
+	hideBoard: function (boardId) {
 		let boards = Array.from(document.querySelectorAll('.board-columns'));
 		let boardToHide = boards.find(board => parseInt(board.dataset.boardId) === boardId);
 		boardToHide.remove();
+
+		let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === boardId);
+		button.children[0].className = button.children[0].className.replace('up', 'down');
 	},
-	setBoardToggleButtons: function() {
-		let buttons = document.querySelectorAll('.board-toggle');
-		for (let button of buttons) {
-			button.addEventListener('click', function() {
-				dom.toggleBoard(this);
-			});
-		}
+	setBoardToggleButtons: function () {
+		document.querySelectorAll('.board-toggle').forEach(button => button.addEventListener('click', function() {
+			dom.toggleBoard(parseInt(this.dataset.boardId));
+		}));
 	},
-	toggleBoard: function(button) {
-		let boardId = parseInt(button.dataset.boardId);
+	toggleBoard: function (boardId) {
 		let board = document.querySelector(`#board${boardId}`);
 		let opened = board.children.length > 1;
-		let symbol = button.children[0];
-		if (!opened) {
-			dom.loadBoard(boardId);
-			symbol.className = symbol.className.replace('down', 'up');
-		} else {
+		if (opened) {
 			dom.hideBoard(boardId);
-			symbol.className = symbol.className.replace('up', 'down');
+		} else {
+			dom.loadBoard(boardId);
 		}
 	},
-	createBoard: function() {
-		dataHandler.createNewBoard(function() {
-			dom.loadBoards();
-		})
+	createBoard: function () {
+		dataHandler.createNewBoard(function (board) {
+			// dom.loadBoards();
+			let newBoard = `
+				<section class="board" id="board${board.id}">
+				<div class="board-header"><span class="board-title">${board.title}</span>
+					<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
+					<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
+				</div>
+				</section>
+			`;
+			dom._appendToElement(document.querySelector('#boards'), newBoard);
+
+			Array.from(document.querySelectorAll('.board-add')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function() {
+				dom.createCard(parseInt(this.dataset.boardId), parseInt(this.dataset.statusId))
+			});
+
+			Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function() {
+				dom.toggleBoard(parseInt(this.dataset.boardId));
+			});
+		});
 	},
-	createCard: function(boardId, statusId) {
+	createCard: function (boardId, statusId) {
 		dataHandler.createNewCard(boardId, statusId, function () {
 			dom.loadBoard(boardId);
-			let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === boardId);
-			button.children[0].className = button.children[0].className.replace('down', 'up');
+		});
+	},
+	createColumn: function (boardId, title='New Column') {
+		dataHandler.createNewColumn(boardId, title, function () {
+			dom.loadBoard(boardId);
+		})
+	},
+	renameColumn: function (columnTitleDiv) {
+		let columnId = parseInt(columnTitleDiv.dataset.columnId);
+		let boardId = parseInt(columnTitleDiv.dataset.boardId);
+		let title = columnTitleDiv.firstChild.innerHTML;
+		columnTitleDiv.innerHTML = `
+			<input type="text" value="${title}" placeholder="${title}" required autofocus>
+			<button class="rename-btn-save">Save</button>
+		`;
+		let saveBtn = columnTitleDiv.children[1];
+		saveBtn.addEventListener('click', function () {
+			dataHandler.renameColumn(columnId, boardId, columnTitleDiv.children[0].value, function () {
+				dom.loadBoard(boardId)
+			});
 		});
 	}
 };

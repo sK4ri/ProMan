@@ -68,7 +68,8 @@ create table boards_statuses
 	status_id integer not null
 		constraint fk_status_id
 			references statuses
-				on delete cascade
+				on delete cascade,
+	"order" integer not null
 );
 
 INSERT INTO statuses VALUES (1,'new');
@@ -99,11 +100,11 @@ INSERT INTO cards VALUES (12,2,'done card 1',4,1);
 
 SELECT pg_catalog.setval('cards_id_seq', 12, true);
 
-INSERT INTO boards_statuses VALUES (1,1);
-INSERT INTO boards_statuses VALUES (1,2);
-INSERT INTO boards_statuses VALUES (1,3);
-INSERT INTO boards_statuses VALUES (1,4);
-INSERT INTO boards_statuses VALUES (2,1);
-INSERT INTO boards_statuses VALUES (2,2);
-INSERT INTO boards_statuses VALUES (2,3);
-INSERT INTO boards_statuses VALUES (2,4);
+INSERT INTO boards_statuses VALUES (1,1,0);
+INSERT INTO boards_statuses VALUES (1,2,1);
+INSERT INTO boards_statuses VALUES (1,3,2);
+INSERT INTO boards_statuses VALUES (1,4,3);
+INSERT INTO boards_statuses VALUES (2,1,0);
+INSERT INTO boards_statuses VALUES (2,2,1);
+INSERT INTO boards_statuses VALUES (2,3,2);
+INSERT INTO boards_statuses VALUES (2,4,3);
