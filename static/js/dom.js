@@ -37,7 +37,7 @@ export let dom = {
 
 		for (let board of boards){
 			boardList += `
-							<section class="board" id="board${board.id}">
+							<section class="board" id="board${board.id}" data-board-id="${board.id}">
 							<div class="board-header"><div class="board-title" data-board-id="${board.id}"><span>${board.title}</span></div>
 								<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
 								<button class="board-delete" data-board-id="${board.id}"><i class="fas fa-trash-alt"></i></button>
@@ -47,12 +47,7 @@ export let dom = {
             `;
 		}
 
-		const outerHtml = `
-							<button id="add-board-button">Add board</button>
-							${boardList}
-        `;
-
-		this._appendToElement(boardsElement, outerHtml);
+		this._appendToElement(boardsElement, boardList);
 
 		// Add board button
 		document.querySelector('#add-board-button').addEventListener('click', dom.createBoard);
@@ -68,6 +63,14 @@ export let dom = {
 		// Edit title function
 		dom.addBoardDeleteFunction();
 		dom.addBoardTitleEditFunction();
+
+		// Dragula
+		dom.boardDragAndDrop().on('drop', function(board, targetContainer) {
+			let order = Array.from(targetContainer.children).map(board => board.dataset.boardId);
+			dataHandler.changeBoardOrder(order, function() {
+
+			});
+		});
 	},
 	loadBoard: function (boardId) {
 		// retrieves cards and makes showCards called
@@ -187,7 +190,7 @@ export let dom = {
 	createBoard: function () {
 		dataHandler.createNewBoard(function (board) {
 			let newBoard = `
-				<section class="board" id="board${board.id}">
+				<section class="board" id="board${board.id}" data-board-id="${board.id}">
 					<div class="board-header"><div class="board-title" data-board-id="${board.id}"><span>${board.title}</span></div>
 						<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
 						<button class="board-delete" data-board-id="${board.id}"><i class="fas fa-trash-alt"></i></button>
@@ -314,6 +317,13 @@ export let dom = {
 		return dragula(Array.from(document.querySelectorAll('.board-columns')).filter(column => parseInt(column.dataset.boardId) === boardId), {
 			moves: function (el, container, handle) {
 				return handle.classList.contains('board-column-title');
+			}
+		});
+	},
+	boardDragAndDrop: function () {
+		return dragula([document.querySelector('#boards')], {
+			moves: function (el, container, handle) {
+				return handle.classList.contains('board-header');
 			}
 		});
 	}

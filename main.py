@@ -143,6 +143,13 @@ def column_change_order():
     return data_handler.column_change_order(data['board_id'], data['order'])
 
 
+@app.route('/board/change-order', methods=['POST'])
+@json_response
+def board_change_order():
+    data = request.get_json()
+    return data_handler.board_change_order(data['order'])
+
+
 def main():
     app.run(debug=True)
 

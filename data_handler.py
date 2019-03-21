@@ -66,9 +66,7 @@ def rename_column(cursor, board_id, column_id, title):
                     UPDATE boards_statuses
                     SET status_id = %(new_id)s
                     WHERE board_id = %(board_id)s AND status_id = %(status_id)s
-                    RETURNING *;
                     """, {'new_id': new_column_id, 'board_id': board_id, 'status_id': column_id})
-    return cursor.fetchall()[0]
 
 
 @connection_handler
@@ -320,13 +318,22 @@ def card_change_order(cursor, card_id, order, new_status_id):
 
 @connection_handler
 def column_change_order(cursor, board_id, order):
-    print(board_id, order)
     for i, column_id in enumerate(order):
         cursor.execute("""
                         UPDATE boards_statuses
                         SET "order" = %s
                         WHERE board_id = %s and status_id = %s
                         """, (i+1, board_id, column_id))
+
+
+@connection_handler
+def board_change_order(cursor, order):
+    for i, board_id in enumerate(order):
+        cursor.execute("""
+                        UPDATE boards
+                        SET "order" = %s
+                        WHERE id = %s
+                        """, (i+1, board_id))
 
 
 if __name__ == '__main__':

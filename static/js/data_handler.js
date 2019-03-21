@@ -116,5 +116,10 @@ export let dataHandler = {
 		this._api_post('/column/change-order', {board_id: boardId, order: order}, (response) => {
 			callback(response)
 		});
+	},
+	changeBoardOrder: function (order, callback) {
+		this._api_post('/board/change-order', {order: order}, (response) => {
+			callback(response)
+		});
 	}
 };
