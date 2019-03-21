@@ -24,6 +24,7 @@ export let dom = {
 		// retrieves boards and makes showBoards called
 		dataHandler.getBoards(function(boards){
 			dom.showBoards(boards);
+			dom.addBoardTitleEditFunction();
 		});
 	},
 	showBoards: function (boards) {
@@ -38,7 +39,7 @@ export let dom = {
 		for(let board of boards){
 			boardList += `
 							<section class="board" id="board${board.id}">
-							<div class="board-header"><span class="board-title">${board.title}</span>
+							<div class="board-header"><input class="board-title" data-title-id="${board.id}" value="${board.title}">
 								<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
 								<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
 							</div>
@@ -134,7 +135,7 @@ export let dom = {
 			symbol.className = symbol.className.replace('up', 'down');
 		}
 	},
-	createBoard: function() {
+    createBoard: function() {
 		dataHandler.createNewBoard(function() {
 			dom.loadBoards();
 		})
@@ -145,5 +146,17 @@ export let dom = {
 			let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === boardId);
 			button.children[0].className = button.children[0].className.replace('down', 'up');
 		});
+	},
+    addBoardTitleEditFunction: function () {
+		let boardTitles = document.querySelectorAll('.board-title');
+		boardTitles.forEach(function (title) {
+			title.addEventListener('change', function () {
+				let boardId = this.getAttribute('data-title-id');
+				let newTitle = this.value;
+				dataHandler.editBoardTitle(boardId, newTitle, function () {});
+				            this.style.backgroundColor = "red";
+
+			})
+		})
 	}
 };

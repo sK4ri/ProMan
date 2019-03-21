@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, session, redirect, flash
+from flask import Flask, render_template, url_for, request, session, redirect, flash, Response
 from util import json_response
 from util import hash_password, verify_password
 import data_handler
@@ -78,6 +78,12 @@ def get_cards_for_board(board_id: int):
     :param board_id: id of the parent board
     """
     return data_handler.get_board_by_id(board_id)
+
+
+@app.route('/edit-board-title/<board_id>', methods=['POST'])
+def edit_board_title(board_id):
+    new_title = request.get_json()['title']
+    return data_handler.edit_board_title(board_id, new_title)
 
 
 def main():
