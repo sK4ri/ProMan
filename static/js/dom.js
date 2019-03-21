@@ -41,6 +41,7 @@ export let dom = {
 							<section class="board" id="board${board.id}">
 							<div class="board-header"><input class="board-title" data-title-id="${board.id}" value="${board.title}">
 								<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
+								<button class="board-delete" data-board-id="${board.id}"><i class="fas fa-trash-alt"></i></button>
 								<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
 							</div>
 							</section>
@@ -58,7 +59,9 @@ export let dom = {
 		document.querySelectorAll('.board-add').forEach(button => button.addEventListener('click', function() {
 			dom.createCard(parseInt(this.dataset.boardId), parseInt(this.dataset.statusId))
 		}));
-		dom.setBoardToggleButtons()
+		dom.addBoardDeleteFunction();
+		dom.setBoardToggleButtons();
+		dom.addBoardTitleEditFunction();
 	},
 	loadBoard: function (boardId) {
 		// retrieves cards and makes showCards called
@@ -153,8 +156,22 @@ export let dom = {
 			title.addEventListener('change', function () {
 				let boardId = this.getAttribute('data-title-id');
 				let newTitle = this.value;
-				dataHandler.editBoardTitle(boardId, newTitle, function () {});
+				dataHandler.editBoardTitle(boardId, newTitle, function () {
+					dom.loadBoards();
+				});
 			})
 		})
+	},
+	addBoardDeleteFunction: function () {
+		let boardTitles = document.querySelectorAll('.board-delete');
+		boardTitles.forEach(function (board) {
+			board.addEventListener('click', function () {
+				let boardId = this.dataset.boardId;
+				dataHandler.deleteBoard(boardId, function () {
+					dom.loadBoards();
+				})
+			})
+		})
+
 	}
 };

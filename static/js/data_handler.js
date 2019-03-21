@@ -25,8 +25,17 @@ export let dataHandler = {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(data)
         })
-            .then(response => response.json())
-            .then(json_response => callback(json_response))
+            .then(callback)
+    },
+    _api_delete: function (url, callback) {
+        // it is not called from outside
+        // sends the data to the API, and calls callback function
+
+        fetch(url, {
+            method: 'DELETE',
+            headers: {"Content-Type": "application/json"},
+        })
+            .then(callback)
     },
     init: function () {
     },
@@ -71,12 +80,15 @@ export let dataHandler = {
 		this._api_get(`/create-card?board_id=${boardId}&status_id=${statusId}`, (response) => {
 			this._data = response;
 			callback(response);
-		})
+		}, )
 	},
     editBoardTitle: function (boardId, newTitle, callback) {
-        this._api_post('/edit-board-title/' + boardId, {'title': newTitle}, (response) => {
-            callback(response)
+        this._api_post('/edit-board-title/' + boardId, {'title': newTitle}, function () {
+            callback()
         });
-    }
+    },
+    deleteBoard: function (boardId, callback) {
+        this._api_delete('/delete-board/' + boardId, callback)
+        },
     // here comes more features
 };

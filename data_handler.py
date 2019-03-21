@@ -198,9 +198,7 @@ def delete_all_statuses_for_board(cursor, board_id):
 def delete_board(cursor, board_id):
     delete_all_cards_on_board(board_id)
     delete_all_statuses_for_board(board_id)
-    cards_on_board = dict_to_tuple_converter(get_cards_by_board_id(board_id), 'id')
-    board_statuses = dict_to_tuple_converter(get_board_statuses(board_id), 'status_id')
-    return print('succ')
+    cursor.execute('DELETE FROM boards WHERE id = %s;', (board_id,))
 
 
 if __name__ == '__main__':
