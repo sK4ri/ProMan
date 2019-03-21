@@ -89,5 +89,10 @@ export let dataHandler = {
 			this._data = response;
 			callback(response);
 		});
+	},
+	editBoardTitle: function (boardId, newTitle, callback) {
+		this._api_post('/edit-board-title/' + boardId, {'title': newTitle}, (response) => {
+			callback(response)
+		});
 	}
 };

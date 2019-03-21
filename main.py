@@ -95,6 +95,13 @@ def rename_column():
     return data_handler.rename_column(data['board_id'], data['column_id'], data['title'])
 
 
+@app.route('/edit-board-title/<board_id>', methods=['POST'])
+@json_response
+def edit_board_title(board_id):
+    new_title = request.get_json()['title']
+    return data_handler.edit_board_title(board_id, new_title)
+
+
 def main():
     app.run(debug=True)
 

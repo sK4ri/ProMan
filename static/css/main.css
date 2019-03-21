@@ -131,3 +131,7 @@ section.board{
 .card-title{
     padding-right: 16px;
 }
+
+.board-title {
+    border:none;
+}

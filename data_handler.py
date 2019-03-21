@@ -197,5 +197,15 @@ def get_status_title_by_id(cursor, status_id):
     return fetch[0]['title'] if fetch else False
 
 
+@connection_handler
+def edit_board_title(cursor, board_id, title):
+    cursor.execute('''
+                    UPDATE boards
+                    SET title= %s 
+                    WHERE id= %s
+                    ''', (title, board_id)
+                   )
+
+
 if __name__ == '__main__':
     print(create_card(1, 2))

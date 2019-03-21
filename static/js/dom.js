@@ -57,7 +57,8 @@ export let dom = {
 		document.querySelectorAll('.board-add').forEach(button => button.addEventListener('click', function() {
 			dom.createCard(parseInt(this.dataset.boardId), parseInt(this.dataset.statusId))
 		}));
-		dom.setBoardToggleButtons()
+		dom.setBoardToggleButtons();
+		dom.addBoardTitleEditFunction();
 	},
 	loadBoard: function (boardId) {
 		// retrieves cards and makes showCards called
@@ -196,5 +197,15 @@ export let dom = {
 				dom.loadBoard(boardId)
 			});
 		});
+	},
+    addBoardTitleEditFunction: function () {
+		let boardTitles = document.querySelectorAll('.board-title');
+		boardTitles.forEach(function (title) {
+			title.addEventListener('change', function () {
+				let boardId = this.getAttribute('data-title-id');
+				let newTitle = this.value;
+				dataHandler.editBoardTitle(boardId, newTitle, function () {});
+			})
+		})
 	}
 };
