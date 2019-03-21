@@ -38,7 +38,7 @@ export let dom = {
 		for (let board of boards){
 			boardList += `
 							<section class="board" id="board${board.id}">
-							<div class="board-header"><span class="board-title">${board.title}</span>
+							<div class="board-header"><input type="text" class="board-title" value="${board.title}" data-title-id="${board.id}">
 								<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
 								<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
 							</div>
