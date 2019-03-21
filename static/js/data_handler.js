@@ -94,5 +94,10 @@ export let dataHandler = {
 		this._api_post('/edit-board-title/' + boardId, {'title': newTitle}, (response) => {
 			callback(response)
 		});
+	},
+	renameCard: function (cardId, title, callback) {
+		this._api_post('/rename-card', {card_id: cardId, title: title}, (response) => {
+			callback(response)
+		})
 	}
 };

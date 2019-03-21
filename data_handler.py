@@ -128,6 +128,17 @@ def create_card(cursor, board_id, status_id):
 
 
 @connection_handler
+def rename_card(cursor, card_id, title):
+    cursor.execute("""
+                    UPDATE cards
+                    SET title = %s
+                    WHERE id = %s
+                    RETURNING *;
+                    """, (title, card_id))
+    return cursor.fetchall()[0]
+
+
+@connection_handler
 def get_last_card_order(cursor, board_id, status_id):
     cursor.execute("""
                     SELECT "order" FROM cards
@@ -219,4 +230,4 @@ def edit_board_title(cursor, board_id, title):
 
 
 if __name__ == '__main__':
-    print(create_card(1, 2))
+    print(rename_card(1, 'anyaduristenit'))

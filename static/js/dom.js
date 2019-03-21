@@ -38,7 +38,7 @@ export let dom = {
 		for (let board of boards){
 			boardList += `
 							<section class="board" id="board${board.id}">
-							<div class="board-header"><input type="text" class="board-title" value="${board.title}" data-title-id="${board.id}">
+							<div class="board-header"><div class="board-title" data-board-id="${board.id}"><span>${board.title}</span></div>
 								<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
 								<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
 							</div>
@@ -53,11 +53,18 @@ export let dom = {
 
 		this._appendToElement(boardsElement, outerHtml);
 
+		// Add board button
 		document.querySelector('#add-board-button').addEventListener('click', dom.createBoard);
+
+		// Add card buttons
 		document.querySelectorAll('.board-add').forEach(button => button.addEventListener('click', function() {
 			dom.createCard(parseInt(this.dataset.boardId), parseInt(this.dataset.statusId))
 		}));
+
+		// Board toggle buttons
 		dom.setBoardToggleButtons();
+
+		// Edit title function
 		dom.addBoardTitleEditFunction();
 	},
 	loadBoard: function (boardId) {
@@ -83,7 +90,7 @@ export let dom = {
 				cardList += `
 					<div class="card" data-card-id="${card.id}">
 						<div class="card-remove"><i class="fas fa-trash-alt"></i></div>
-						<div class="card-title">${card.title}</div>
+						<div class="card-title"><span>${card.title}</span></div>
 					</div>
 				`
 			}
@@ -122,6 +129,9 @@ export let dom = {
 			dom.renameColumn(title);
 		}));
 
+		// Rename cards
+		document.querySelectorAll('.card').forEach(card => dom.setRenameCard(card, board.id));
+
 		// Toggle button
 		let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id);
 		button.children[0].className = button.children[0].className.replace('down', 'up');
@@ -153,30 +163,28 @@ export let dom = {
 	},
 	createBoard: function () {
 		dataHandler.createNewBoard(function (board) {
-			// dom.loadBoards();
 			let newBoard = `
 				<section class="board" id="board${board.id}">
-				<div class="board-header"><input type="text" class="board-title" value="${board.title}" data-title-id="${board.id}">
-					<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
-					<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
-				</div>
+					<div class="board-header"><div class="board-title" data-board-id="${board.id}"><span>${board.title}</span></div>
+						<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
+						<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
+					</div>
 				</section>
 			`;
 			dom._appendToElement(document.querySelector('#boards'), newBoard);
 
-			Array.from(document.querySelectorAll('.board-add')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function() {
+			Array.from(document.querySelectorAll('.board-add')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function () {
 				dom.createCard(parseInt(this.dataset.boardId), parseInt(this.dataset.statusId))
 			});
 
-			Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function() {
+			Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function () {
 				dom.toggleBoard(parseInt(this.dataset.boardId));
 			});
 
-			Array.from(document.querySelectorAll('.board-title')).find(inputField => parseInt(inputField.dataset.titleId) === board.id).addEventListener('change', function () {
-				let boardId = this.getAttribute('data-title-id');
-				let newTitle = this.value;
-				dataHandler.editBoardTitle(boardId, newTitle, function () {});
-			})
+			let titleDiv = Array.from(document.querySelectorAll('.board-title')).find(titleDiv => parseInt(titleDiv.dataset.boardId) === board.id);
+			titleDiv.children[0].addEventListener('click', function () {
+				dom.renameBoard(titleDiv);
+			});
 		});
 	},
 	createCard: function (boardId, statusId) {
@@ -194,24 +202,54 @@ export let dom = {
 		let boardId = parseInt(columnTitleDiv.dataset.boardId);
 		let title = columnTitleDiv.firstChild.innerHTML;
 		columnTitleDiv.innerHTML = `
-			<input type="text" value="${title}" placeholder="${title}" required autofocus>
-			<button class="rename-btn-save">Save</button>
+			<input type="text" value="${title}" placeholder="${title}" required>
 		`;
-		let saveBtn = columnTitleDiv.children[1];
-		saveBtn.addEventListener('click', function () {
-			dataHandler.renameColumn(columnId, boardId, columnTitleDiv.children[0].value, function () {
-				dom.loadBoard(boardId)
+		columnTitleDiv.children[0].focus();
+		['blur', 'change'].forEach(event => {
+			columnTitleDiv.children[0].addEventListener(event, function () {
+				dataHandler.renameColumn(columnId, boardId, columnTitleDiv.children[0].value, function () {
+					dom.loadBoard(boardId)
+				});
 			});
 		});
 	},
-    addBoardTitleEditFunction: function () {
+	addBoardTitleEditFunction: function () {
 		let boardTitles = document.querySelectorAll('.board-title');
-		boardTitles.forEach(function (title) {
-			title.addEventListener('change', function () {
-				let boardId = this.getAttribute('data-title-id');
+		boardTitles.forEach(function (titleDiv) {
+			titleDiv.children[0].addEventListener('click', function () {
+				dom.renameBoard(titleDiv)
+			});
+		});
+	},
+	renameBoard: function (titleDiv) {
+		titleDiv.innerHTML = `
+			<input type="text" value="${titleDiv.children[0].innerHTML}" placeholder="${titleDiv.children[0].innerHTML}" data-board-id="${titleDiv.dataset.boardId}" required>
+		`;
+		titleDiv.children[0].focus();
+		['blur', 'change'].forEach(event => {
+			titleDiv.children[0].addEventListener(event, function () {
 				let newTitle = this.value;
-				dataHandler.editBoardTitle(boardId, newTitle, function () {});
-			})
-		})
-	}
+				dataHandler.editBoardTitle(titleDiv.dataset.boardId, newTitle, function () {
+					titleDiv.innerHTML = `<span>${newTitle}</span>`;
+					titleDiv.children[0].addEventListener('click', function () {
+						dom.renameBoard(titleDiv);
+					});
+				});
+			});
+		});
+	},
+	setRenameCard: function (card, boardId) {
+		card.children[1].children[0].addEventListener('click', function () {
+			let cardId = card.dataset.cardId;
+			card.children[1].innerHTML = `
+				<input type="text" value="${this.innerHTML}" data-card-id="${cardId}" required>
+			`;
+			card.children[1].children[0].focus();
+			['blur', 'change'].forEach(event => {
+				card.children[1].children[0].addEventListener(event, function () {
+					dataHandler.renameCard(cardId, this.value, function(){dom.loadBoard(boardId)});
+				});
+			});
+		});
+	},
 };

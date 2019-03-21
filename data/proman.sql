@@ -73,6 +73,24 @@ create table boards_statuses
 	"order" integer not null
 );
 
+drop table if exists users;
+drop sequence if exists public.users_id_seq;
+create table users
+(
+	id serial not null,
+	user_name varchar(20),
+	password varchar(100)
+);
+
+create unique index users_id_uindex
+	on users (id);
+
+alter table users
+	add constraint users_pk
+		primary key (id);
+
+
+
 INSERT INTO statuses VALUES (1,'new');
 INSERT INTO statuses VALUES (2,'in progress');
 INSERT INTO statuses VALUES (3,'testing');
