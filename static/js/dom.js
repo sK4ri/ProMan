@@ -156,7 +156,7 @@ export let dom = {
 			// dom.loadBoards();
 			let newBoard = `
 				<section class="board" id="board${board.id}">
-				<div class="board-header"><span class="board-title">${board.title}</span>
+				<div class="board-header"><input type="text" class="board-title" value="${board.title}" data-title-id="${board.id}">
 					<button class="board-add" data-board-id="${board.id}" data-status-id="${board.columns[0].id}">Add Card</button>
 					<button class="board-toggle" data-board-id="${board.id}"><i class="fas fa-chevron-down"></i></button>
 				</div>
@@ -171,6 +171,12 @@ export let dom = {
 			Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id).addEventListener('click', function() {
 				dom.toggleBoard(parseInt(this.dataset.boardId));
 			});
+
+			Array.from(document.querySelectorAll('.board-title')).find(inputField => parseInt(inputField.dataset.titleId) === board.id).addEventListener('change', function () {
+				let boardId = this.getAttribute('data-title-id');
+				let newTitle = this.value;
+				dataHandler.editBoardTitle(boardId, newTitle, function () {});
+			})
 		});
 	},
 	createCard: function (boardId, statusId) {

@@ -9,6 +9,7 @@ def get_boards(cursor):
     """
     cursor.execute("""
                     SELECT * FROM boards
+                    ORDER BY "order"
                     """)
     boards = cursor.fetchall()
     for i, board in enumerate(boards):
@@ -18,14 +19,24 @@ def get_boards(cursor):
 
 @connection_handler
 def create_board(cursor):
+    order = get_last_board_order() + 1
     cursor.execute("""
-                    INSERT INTO boards(title)
-                    VALUES (%(title)s) 
+                    INSERT INTO boards(title, "order")
+                    VALUES (%(title)s, %(board_order)s) 
                     RETURNING *;
-                    """, {'title': 'New Board'})
+                    """, {'title': 'New Board', 'board_order': order})
     created_board = cursor.fetchall()[0]
     set_default_columns(created_board['id'])
     return get_board_by_id(created_board['id'])
+
+
+@connection_handler
+def get_last_board_order(cursor):
+    cursor.execute("""
+                    SELECT * FROM boards                  
+                    """)
+    boards = cursor.fetchall()
+    return max([board['order'] for board in boards]) if boards else 0
 
 
 @connection_handler
@@ -123,7 +134,7 @@ def get_last_card_order(cursor, board_id, status_id):
                     WHERE board_id = %(board_id)s AND status_id = %(status_id)s
                     """, {'board_id': board_id, 'status_id': status_id})
     cards = cursor.fetchall()
-    return max([card['order'] for card in cards]) if cards else -1
+    return max([card['order'] for card in cards]) if cards else 0
 
 
 @connection_handler
