@@ -148,8 +148,7 @@ export let dom = {
 		// Dragula
 		dom.DragandDrop(`#board${board.id}`).on('drop', function(card, targetColumn, sourceColumn, sibling) {
 			let cardId = card.dataset.cardId;
-			console.log(targetColumn.lastElementChild);
-			let order = sibling ? parseInt(sibling.dataset.cardOrder): parseInt(targetColumn.children[targetColumn.children.length - 2].dataset.cardOrder) + 1;
+			let order = Array.from(targetColumn.children).map(card => card.dataset.cardId);
 			let newStatus = targetColumn.parentNode.dataset.columnId;
 			dataHandler.changeOrder(cardId, order, newStatus, function() {dom.loadBoard(board.id)});
 		});
