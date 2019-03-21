@@ -1,4 +1,5 @@
 from persistence import connection_handler
+from util import dict_to_tuple_converter
 
 
 @connection_handler
@@ -97,7 +98,6 @@ def get_last_card_order(cursor, board_id, status_id):
     return max([card['order'] for card in cards]) if cards else -1
 
 
-
 @connection_handler
 def get_board_by_id(cursor, board_id):
     cursor.execute("""
@@ -173,6 +173,34 @@ def edit_board_title(cursor, board_id, title):
                     WHERE id= %s
                     ''', (title, board_id)
                    )
+
+
+@connection_handler
+def get_board_statuses(cursor, board_id):
+    cursor.execute('''
+                    SELECT status_id FROM boards_statuses WHERE board_id = %s;
+                    ''', (board_id,)
+                   )
+    return cursor.fetchall()
+
+
+@connection_handler
+def delete_all_cards_on_board(cursor, board_id):
+    cursor.execute('DELETE FROM cards WHERE board_id = %s;', (board_id,))
+
+
+@connection_handler
+def delete_all_statuses_for_board(cursor, board_id):
+    cursor.execute('DELETE FROM boards_statuses WHERE board_id = %s;', (board_id,))
+
+
+@connection_handler
+def delete_board(cursor, board_id):
+    delete_all_cards_on_board(board_id)
+    delete_all_statuses_for_board(board_id)
+    cards_on_board = dict_to_tuple_converter(get_cards_by_board_id(board_id), 'id')
+    board_statuses = dict_to_tuple_converter(get_board_statuses(board_id), 'status_id')
+    return print('succ')
 
 
 if __name__ == '__main__':

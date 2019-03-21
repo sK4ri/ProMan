@@ -86,6 +86,11 @@ def edit_board_title(board_id):
     return data_handler.edit_board_title(board_id, new_title)
 
 
+@app.route('/delete-board-<board_id>', methods=['get'])
+def delete_board(board_id):
+    data_handler.delete_board(1)
+
+
 def main():
     app.run(debug=True)
 
