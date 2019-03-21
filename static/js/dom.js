@@ -90,7 +90,7 @@ export let dom = {
 			let cardList = '';
 			for (let card of column.cards) {
 				cardList += `
-					<div class="card" data-card-id="${card.id}">
+					<div class="card" data-card-id="${card.id}" data-board-id="${card.board_id}">
 						<div class="card-remove"><i class="fas fa-trash-alt"></i></div>
 						<div class="card-title"><span>${card.title}</span></div>
 					</div>
@@ -138,6 +138,14 @@ export let dom = {
 		let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id);
 		button.children[0].className = button.children[0].className.replace('down', 'up');
 
+		// Delete card button
+		document.querySelectorAll('.card-remove').forEach(card => {
+			card.children[0].addEventListener('click', function() {
+				dom.deleteCard(card.parentNode)
+			});
+		});
+
+		// Dragula
 		dom.DragandDrop(`#board${board.id}`)
 	},
 	// here comes more features
@@ -274,6 +282,11 @@ export let dom = {
 		dataHandler.deleteBoard(boardId, function () {
 			document.querySelector(`#board${boardId}`).remove();
 		})
+	},
+	deleteCard: function (card) {
+		dataHandler.deleteCard(card.dataset.cardId, function () {
+			dom.loadBoard(card.dataset.boardId)
+		});
 	},
 	DragandDrop: function (board_id) {
 		let cols = document.querySelectorAll(`${board_id} .board-column-content`);

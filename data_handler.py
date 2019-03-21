@@ -277,5 +277,13 @@ def delete_board(cursor, board_id):
     cursor.execute('DELETE FROM boards WHERE id = %s;', (board_id,))
 
 
+@connection_handler
+def delete_card(cursor, card_id):
+    cursor.execute("""
+                    DELETE FROM cards
+                    WHERE id = %s;
+                    """, (card_id,))
+
+
 if __name__ == '__main__':
     print(create_card(1, 2))
