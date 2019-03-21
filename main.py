@@ -11,7 +11,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
 @app.route("/")
-@app.route('/<user>')
+@app.route('/<user>/')
 def index(user=''):
     """
     This is a one-pager which shows all the boards and cards

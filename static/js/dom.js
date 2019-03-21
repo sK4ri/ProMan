@@ -25,6 +25,7 @@ export let dom = {
 		dataHandler.getBoards(function(boards){
 			dom.showBoards(boards);
 		});
+
 	},
 	showBoards: function (boards) {
 		// shows boards appending them to #boards div
