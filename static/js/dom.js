@@ -90,7 +90,7 @@ export let dom = {
 			let cardList = '';
 			for (let card of column.cards) {
 				cardList += `
-					<div class="card" data-card-id="${card.id}" data-board-id="${card.board_id}">
+					<div class="card" data-card-id="${card.id}" data-board-id="${card.board_id}" data-card-order="${card.order}">
 						<div class="card-remove"><i class="fas fa-trash-alt"></i></div>
 						<div class="card-title"><span>${card.title}</span></div>
 					</div>
@@ -146,7 +146,13 @@ export let dom = {
 		});
 
 		// Dragula
-		dom.DragandDrop(`#board${board.id}`)
+		dom.DragandDrop(`#board${board.id}`).on('drop', function(card, targetColumn, sourceColumn, sibling) {
+			let cardId = card.dataset.cardId;
+			console.log(targetColumn.lastElementChild);
+			let order = sibling ? parseInt(sibling.dataset.cardOrder): parseInt(targetColumn.children[targetColumn.children.length - 2].dataset.cardOrder) + 1;
+			let newStatus = targetColumn.parentNode.dataset.columnId;
+			dataHandler.changeOrder(cardId, order, newStatus, function() {dom.loadBoard(board.id)});
+		});
 	},
 	// here comes more features
 
@@ -296,6 +302,6 @@ export let dom = {
 			container.push(elem);
 
 		}
-		dragula(container);
+		return dragula(container);
 	}
 };

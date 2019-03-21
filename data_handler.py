@@ -285,5 +285,30 @@ def delete_card(cursor, card_id):
                     """, (card_id,))
 
 
+@connection_handler
+def get_board_id_by_card_id(cursor, card_id):
+    cursor.execute("""
+                    SELECT * FROM cards
+                    WHERE id = %s
+                    """, (card_id,))
+    return cursor.fetchall()[0]['board_id']
+
+
+@connection_handler
+def card_change_order(cursor, card_id, order, new_status_id):
+    board_id = get_board_id_by_card_id(card_id)
+    cursor.execute("""
+                    UPDATE cards
+                    SET "order" = "order" + 1
+                    WHERE "order" >= %s and status_id = %s and board_id = %s
+                    """, (order, new_status_id, board_id))
+
+    cursor.execute("""
+                    UPDATE cards
+                    SET status_id = %s, "order" = %s
+                    WHERE id = %s
+                    """, (new_status_id, order, card_id))
+
+
 if __name__ == '__main__':
     print(create_card(1, 2))

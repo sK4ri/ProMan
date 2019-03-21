@@ -106,6 +106,10 @@ export let dataHandler = {
 		this._api_get(`/delete-card/${cardId}`, (response) => {
 			callback(response)
 		});
+	},
+	changeOrder: function (cardId, order, newStatus, callback) {
+		this._api_post('/card/change-order', {card_id: cardId, order: order, new_status: newStatus}, (response) => {
+			callback(response)
+		})
 	}
-	// here comes more features
 };

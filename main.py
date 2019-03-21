@@ -129,6 +129,13 @@ def delete_card(card_id):
     return data_handler.delete_card(card_id)
 
 
+@app.route('/card/change-order', methods=['POST'])
+@json_response
+def card_change_order():
+    data = request.get_json()
+    return data_handler.card_change_order(data['card_id'], data['order'], data['new_status'])
+
+
 def main():
     app.run(debug=True)
 
