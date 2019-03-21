@@ -211,10 +211,11 @@ export let dom = {
 			title.addEventListener('change', function () {
 				let boardId = this.getAttribute('data-title-id');
 				let newTitle = this.value;
-				dataHandler.editBoardTitle(boardId, newTitle, function () {});
+				dataHandler.editBoardTitle(boardId, newTitle, function () {
+				});
 			})
 		})
-	}
+	} ,
 	DragandDrop: function (board_id) {
 		let cols = document.querySelectorAll(`${board_id} .board-column-content`);
 		let container = [];
