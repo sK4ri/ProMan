@@ -92,7 +92,7 @@ export let dom = {
 		`;
 
 		this._appendToElement(document.querySelector(`#board${board.id}`), outerHtml);
-		dom.DragandDrop();
+		dom.DragandDrop(`#board${board.id}`)
 	},
 	// here comes more features
 
@@ -120,8 +120,8 @@ export let dom = {
 			symbol.className = symbol.className.replace('up', 'down');
 		}
 	},
-	DragandDrop: function () {
-		let cols = document.getElementsByClassName('board-column-content');
+	DragandDrop: function (board_id) {
+		let cols = document.querySelectorAll(`${board_id} .board-column-content`);
 		let container = [];
 
 		for (let elem of cols){
