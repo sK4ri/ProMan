@@ -126,6 +126,7 @@ export let dom = {
 		let button = Array.from(document.querySelectorAll('.board-toggle')).find(button => parseInt(button.dataset.boardId) === board.id);
 		button.children[0].className = button.children[0].className.replace('down', 'up');
 
+		dom.DragandDrop(`#board${board.id}`)
 	},
 	// here comes more features
 
@@ -213,5 +214,15 @@ export let dom = {
 				dataHandler.editBoardTitle(boardId, newTitle, function () {});
 			})
 		})
+	}
+	DragandDrop: function (board_id) {
+		let cols = document.querySelectorAll(`${board_id} .board-column-content`);
+		let container = [];
+
+		for (let elem of cols){
+			container.push(elem);
+
+		}
+		dragula(container);
 	}
 };
