@@ -13,38 +13,39 @@
     <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon/favicon-96x96.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
 
-{#    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">#}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/solid.css" integrity="sha384-rdyFrfAIC05c5ph7BKz3l5NG5yEottvO/DQ0dCrwD8gzeQDjYBHNr1ucUpQuljos" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/fontawesome.css" integrity="sha384-u5J7JghGz0qUrmEsWzBQkfvc8nK3fUT7DCaQzNQ+q4oEXhGSx+P2OqjWsfIRB8QT" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="http://code.jquery.com/jquery-3.3.1.js"defer></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js' defer></script>
 
-  </head>
-  <body>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark" role="navigation">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <form class="navbar-nav mr-auto" action="{{ url_for('logout_user') }}" method="post">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">
+                        Login
+                    </button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">
+                        Register
+                    </button>
+                    <button id="logoutButton" class="btn btn-primary" type="submit">Logout</button>
+                </form>
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                    <h5 class="navbar-nav">Logged in as <strong>{{ user }}</strong></h5>
+                </div>
+            </div>
+        </nav>
+        <h1>ProMan</h1>
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="collapse navbar-collapse">
-          <form action="{{ url_for('logout_user') }}" method="post">
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">
-                  Login
-              </button>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">
-                  Register
-              </button>
-              <button id="logoutButton" class="btn btn-primary" type="submit" {{ not_logged_in }}>Logout</button>
-          </form>
-      </div>
-  </nav>
+        <!-- Emmet: .board-container>section.board*3>.board-header>(span.board-title{Board $}+button.board-add{Add Card}+button.board-toggle>i.fas.fa-chevron-down)^.board-columns>((.board-column>.board-column-title{New}+.board-column-content>.card*5>(.card-remove>i.fas.fa-trash-alt^.card-title{Card $}))+(.board-column>.board-column-title{In Progress}+.board-column-content>.card*5>(.card-remove>i.fas.fa-trash-alt^.card-title{Card $}))+(.board-column>.board-column-title{Testing}+.board-column-content>.card*5>(.card-remove>i.fas.fa-trash-alt^.card-title{Card $}))+(.board-column>.board-column-title{Done}+.board-column-content>.card*5>(.card-remove>i.fas.fa-trash-alt^.card-title{Card $}))) -->
+        <div class="board-container" id="boards">
 
-    <h1>ProMan</h1>
-    <div class="board-container" id="boards">
-
-    </div>
-
+        </div>
 
 <!-- Modal -->
         <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
@@ -57,15 +58,15 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ url_for('login_user') }}">
+                        <form action="{{ url_for('login_user') }}" method="post">
                             <div class="form-group">
                                 <label for="login-name">Username</label>
-                                <input type="text" class="form-control" id="login-name" aria-describedby="loginHelp" placeholder="username">
+                                <input type="text" class="form-control" name="login_name" aria-describedby="loginHelp" placeholder="username">
                                 <small id="loginHelp" class="form-text text-muted">Enter unique username</small>
                               </div>
                               <div class="form-group">
                                 <label for="loginPassword">Password</label>
-                                <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+                                <input type="password" class="form-control" name="loginPassword" placeholder="Password">
                               </div>
                               <button type="submit" class="btn btn-primary">Login</button>
                         </form>
@@ -86,15 +87,15 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ url_for('register_user') }}">
+                        <form action="{{ url_for('register_user') }}" method="post">
                             <div class="form-group">
                                 <label for="register-name">Username</label>
-                                <input type="text" class="form-control" id="register-name" aria-describedby="regHelp" placeholder="Enter new username">
+                                <input type="text" class="form-control" name="register_name"  aria-describedby="regHelp" placeholder="Enter new username">
                                 <small id="regHelp" class="form-text text-muted">Enter new username</small>
                               </div>
                               <div class="form-group">
                                 <label for="regPassword">Password</label>
-                                <input type="password" class="form-control" id="regPassword" placeholder="Password">
+                                <input type="password" class="form-control" name="regPassword" placeholder="Password">
                               </div>
                               <button type="submit" class="btn btn-primary">Register</button>
                         </form>
