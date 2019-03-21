@@ -110,6 +110,11 @@ def edit_board_title(board_id):
     return data_handler.edit_board_title(board_id, new_title)
 
 
+@app.route('/delete-board/<board_id>', methods=['delete'])
+def delete_board(board_id):
+    return data_handler.delete_board(board_id)
+
+
 def main():
     app.run(debug=True)
 

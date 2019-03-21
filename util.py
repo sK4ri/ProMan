@@ -24,3 +24,10 @@ def hash_password(plain_text_password):
 def verify_password(plain_text_password, hashed_password):
     hashed_bytes_password = hashed_password.encode('utf-8')
     return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_bytes_password)
+
+
+def dict_to_tuple_converter(convertable, key):
+    values = ()
+    for row in convertable:
+        values += (row[key],)
+    return values

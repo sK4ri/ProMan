@@ -1,6 +1,7 @@
 from persistence import connection_handler
 from psycopg2 import sql
 
+
 @connection_handler
 def get_boards(cursor):
     """
@@ -136,7 +137,6 @@ def get_last_card_order(cursor, board_id, status_id):
     cards = cursor.fetchall()
     return max([card['order'] for card in cards]) if cards else 0
 
-
 @connection_handler
 def get_board_by_id(cursor, board_id):
     cursor.execute("""
@@ -240,5 +240,31 @@ def edit_board_title(cursor, board_id, title):
                    )
 
 
+@connection_handler
+def get_board_statuses(cursor, board_id):
+    cursor.execute('''
+                    SELECT status_id FROM boards_statuses WHERE board_id = %s;
+                    ''', (board_id,)
+                   )
+    return cursor.fetchall()
+
+
+@connection_handler
+def delete_all_cards_on_board(cursor, board_id):
+    cursor.execute('DELETE FROM cards WHERE board_id = %s;', (board_id,))
+
+
+@connection_handler
+def delete_all_statuses_for_board(cursor, board_id):
+    cursor.execute('DELETE FROM boards_statuses WHERE board_id = %s;', (board_id,))
+
+
+@connection_handler
+def delete_board(cursor, board_id):
+    delete_all_cards_on_board(board_id)
+    delete_all_statuses_for_board(board_id)
+    cursor.execute('DELETE FROM boards WHERE id = %s;', (board_id,))
+
+
 if __name__ == '__main__':
-    print(create_card(1, 2))
+    print(create_card(1, 1))

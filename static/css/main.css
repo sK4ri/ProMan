@@ -60,6 +60,12 @@ section.board{
     display: inline-block;
 }
 
+.board-delete{
+    float: right;
+    margin: 13px;
+
+}
+
 .board-toggle{
     float: right;
     margin: 13px;
