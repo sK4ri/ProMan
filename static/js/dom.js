@@ -2,6 +2,13 @@
 import { dataHandler } from "./data_handler.js";
 
 export let dom = {
+
+	checkSession: function () {
+			 $('#add-private-board-button:hidden').remove();
+
+	},
+
+
 	_appendToElement: function (elementToExtend, textToAppend, prepend = false) {
 		// function to append new DOM elements (represented by a string) to an existing DOM element
 		let fakeDiv = document.createElement('div');
@@ -59,6 +66,7 @@ export let dom = {
 
 		// Board toggle buttons
 		dom.setBoardToggleButtons();
+		dom.checkSession();
 
 		// Edit title function
 		dom.addBoardDeleteFunction();

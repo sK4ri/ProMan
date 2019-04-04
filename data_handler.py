@@ -1,6 +1,7 @@
 from persistence import connection_handler
 
 
+
 @connection_handler
 def get_boards(cursor):
     """

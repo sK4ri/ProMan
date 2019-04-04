@@ -18,8 +18,8 @@ def index():
     """
     boards = data_handler.get_boards()
     if 'username' in session:
-        return render_template('index.html', boards=boards, user=session['username'])
-    return render_template('index.html', boards=boards)
+        return render_template('index.html', boards=boards, user=session['username'], button_status='active')
+    return render_template('index.html', boards=boards, button_status='hidden')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -30,7 +30,7 @@ def register_user():
         hashed_pw = hash_password(plain_password)
         data_handler.add_user_to_users_table(session['username'], hashed_pw)
         boards = data_handler.get_boards()
-        return render_template('index.html', boards=boards, user=session['username'])
+        return render_template('index.html', boards=boards, user=session['username'], button_status='hidden')
     elif 'username' in session:
         flash('Active Login, Logout, then try again.')
         return redirect(url_for('index'))
@@ -45,7 +45,7 @@ def login_user():
         match = verify_password(plain_password, hashed_pw['password'])
         if match:
             boards = data_handler.get_boards()
-            return render_template('index.html', boards=boards, user=session['username'])
+            return render_template('index.html', boards=boards, user=session['username'], button_status='active')
     else:
         flash('Active login, logout then try again.')
         return redirect(url_for('index'))
