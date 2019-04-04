@@ -149,13 +149,18 @@ export let dom = {
 		});
 
 		// Dragula
-		dom.cardDragAndDrop(`#board${board.id}`).on('drop', function(card, targetColumn) {
+		let drake = dom.cardDragAndDrop(`#board${board.id}`);
+			drake.on('drop', function(card, targetColumn) {
 			let cardId = card.dataset.cardId;
 			let order = Array.from(targetColumn.children).map(card => card.dataset.cardId);
 			let newStatus = targetColumn.parentNode.dataset.columnId;
 			dataHandler.changeCardOrder(cardId, order, newStatus, function() {});
 		});
-
+			drake.on('remove', function(card){
+				dataHandler.deleteCard(card.dataset.cardId, function () {
+					dom.loadBoard(card.dataset.boardId)
+				})
+			});
 		dom.columnDragAndDrop(board.id).on('drop', function (column, targetDiv) {
 			let order = Array.from(targetDiv.children).map(column => column.dataset.columnId);
 			dataHandler.changeColumnOrder(board.id, order, function() {
@@ -311,20 +316,20 @@ export let dom = {
 			container.push(elem);
 
 		}
-		return dragula(container);
+		return dragula(container,{removeOnSpill:true});
 	},
 	columnDragAndDrop: function (boardId) {
 		return dragula(Array.from(document.querySelectorAll('.board-columns')).filter(column => parseInt(column.dataset.boardId) === boardId), {
 			moves: function (el, container, handle) {
 				return handle.classList.contains('board-column-title');
-			}
+			},removeOnSpill:true
 		});
 	},
 	boardDragAndDrop: function () {
 		return dragula([document.querySelector('#boards')], {
 			moves: function (el, container, handle) {
 				return handle.classList.contains('board-header');
-			}
+			},removeOnSpill:true
 		});
 	}
 };
